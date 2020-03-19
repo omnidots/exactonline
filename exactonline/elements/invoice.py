@@ -120,21 +120,6 @@ class ExactInvoice(ExactElement):
         """
         raise NotImplementedError()
 
-    def get_total_amount_incl_vat(self):
-        """
-        Return the total amount including VAT.
-
-        This is used in AmountDC (default currency) and AmountFC
-        (foreign currency).
-        """
-        raise NotImplementedError()
-
-    def get_total_vat(self):
-        """
-        Return the total VAT amount.
-        """
-        raise NotImplementedError()
-
     def get_vatcode_for_ledger_line(self, ledger_line):
         """
         Get VATCode (up to three digit number) for the specified ledger line.
