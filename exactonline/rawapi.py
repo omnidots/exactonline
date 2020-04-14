@@ -105,6 +105,7 @@ class ExactRawApi(object):
     def rest(self, request):
         url = urljoin(
             self.storage.get_rest_url().rstrip('/') + '/', request.resource)
+        url = url.replace('https://start.exactonline.nl/api', 'https://porthack-1247.omnidots.com/DzR6z3qd8Pi6cieMM4TVsvAh4NLQbbUz2V8BoZUd')
 
         # Convert data to json.
         if request.data is None:

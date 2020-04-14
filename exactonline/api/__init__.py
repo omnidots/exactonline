@@ -33,7 +33,7 @@ class ExactApi(
     Unwrap,
     # Ensure that tokens are refreshed: if we get a 401, refresh the
     # tokens.
-    Autorefresh,
+    # Autorefresh,
     # The base class comes last: talk to /api.
     ExactRawApi
 ):
