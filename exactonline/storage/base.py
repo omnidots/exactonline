@@ -83,10 +83,9 @@ class ExactOnlineConfig(object):
             'https://start.exactonline.nl/api/oauth2/auth'))
 
     def get_rest_url(self):
-        return 'https://porthack-1247.omnidots.com/DzR6z3qd8Pi6cieMM4TVsvAh4NLQbbUz2V8BoZUd/'
-        # return native_string(self.get_or_set_default(
-        #     'server', 'rest_url',
-        #     'http://localhost:5000/api'))
+        return native_string(self.get_or_set_default(
+            'server', 'rest_url',
+            'https://start.exactonline.nl/api/'))
 
     def get_token_url(self):
         return native_string(self.get_or_set_default(
