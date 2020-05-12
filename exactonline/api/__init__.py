@@ -13,6 +13,7 @@ from .autorefresh import Autorefresh
 from .unwrap import Unwrap
 from .v1division import V1Division
 
+from .accounts import Accounts
 from .bankaccounts import BankAccounts
 from .contacts import Contacts
 from .documents import Documents
@@ -37,6 +38,7 @@ class ExactApi(
     # The base class comes last: talk to /api.
     ExactRawApi
 ):
+    accounts = Accounts.as_property()
     bankaccounts = BankAccounts.as_property()
     contacts = Contacts.as_property()
     documents = Documents.as_property()

@@ -12,14 +12,12 @@ from .manager import Manager
 class Contacts(Manager):
     resource = 'crm/Contacts'
 
-    def filter(self, relation_code=None, **kwargs):
-        # $select=ID,Code,Name
-        if 'select' not in kwargs:
-            kwargs['select'] = 'ID,Code,FirstName,MiddleName,LastName'
+    def filter(self, ID=None, **kwargs):
+        if ID is not None:
+            remote_id = self._remote_guid(ID)
+            # Filter by our account number.
+            self._filter_append(kwargs, u'ID eq %s' % (remote_id,))
 
-        if relation_code is not None:
-            remote_id = self._remote_contact_code(relation_code)
-            self._filter_append(kwargs, u'Code eq %s' % (remote_id,))
         return super(Contacts, self).filter(**kwargs)
 
     def _remote_contact_code(self, code):
