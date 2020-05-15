@@ -1,5 +1,6 @@
 from .manager import Manager
 
+
 class Accounts(Manager):
     resource = 'crm/Accounts'
 

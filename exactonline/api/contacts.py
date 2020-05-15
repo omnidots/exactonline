@@ -12,9 +12,9 @@ from .manager import Manager
 class Contacts(Manager):
     resource = 'crm/Contacts'
 
-    def filter(self, ID=None, **kwargs):
-        if ID is not None:
-            remote_id = self._remote_guid(ID)
+    def filter(self, contact_id=None, **kwargs):
+        if contact_id is not None:
+            remote_id = self._remote_guid(contact_id)
             # Filter by our account number.
             self._filter_append(kwargs, u'ID eq %s' % (remote_id,))
 
