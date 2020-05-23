@@ -16,13 +16,16 @@ from .v1division import V1Division
 from .accounts import Accounts
 from .bankaccounts import BankAccounts
 from .contacts import Contacts
-from .documents import Documents
 from .documentattachments import DocumentAttachments
+from .documents import Documents
+from .goodsdeliveries import GoodsDeliveries
 from .invoices import Invoices
+from .items import Items
 from .ledgeraccounts import LedgerAccounts
 from .quotations import Quotations
 from .receivables import Receivables
 from .relations import Relations
+from .stockserialnumbers import StockSerialNumbers
 from .vatcodes import VatCodes
 
 
@@ -41,11 +44,14 @@ class ExactApi(
     accounts = Accounts.as_property()
     bankaccounts = BankAccounts.as_property()
     contacts = Contacts.as_property()
-    documents = Documents.as_property()
     documentattachments = DocumentAttachments.as_property()
+    documents = Documents.as_property()
+    goodsdeliveries = GoodsDeliveries.as_property()
     invoices = Invoices.as_property()
+    items = Items.as_property()
     ledgeraccounts = LedgerAccounts.as_property()
     quotations = Quotations.as_property()
     receivables = Receivables.as_property()
     relations = Relations.as_property()
+    stockserialnumbers = StockSerialNumbers.as_property()
     vatcodes = VatCodes.as_property()
