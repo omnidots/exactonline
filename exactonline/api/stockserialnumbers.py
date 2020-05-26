@@ -6,7 +6,7 @@ class StockSerialNumbers(Manager):
 
     def filter(self, serial_number=None, **kwargs):
         if 'select' not in kwargs:
-                kwargs['select'] = 'ItemCode,SerialNumber,StockTransactionType'
+            kwargs['select'] = 'ItemCode,SerialNumber,StockTransactionType'
 
         if serial_number is not None:
             # Filter by our serial number.

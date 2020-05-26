@@ -6,7 +6,7 @@ class Items(Manager):
 
     def filter(self, code=None, **kwargs):
         if 'select' not in kwargs:
-                kwargs['select'] = 'ID,Stock,Description,Code'
+            kwargs['select'] = 'ID,Stock,Description,Code'
 
         if code is not None:
             # Filter by our EntryID

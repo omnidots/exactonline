@@ -6,7 +6,7 @@ class GoodsDeliveries(Manager):
 
     def filter(self, entry_id=None, **kwargs):
         if 'select' not in kwargs:
-                kwargs['select'] = 'DeliveryAccount,DeliveryDate,DeliveryNumber,Description,GoodsDeliveryLines'
+            kwargs['select'] = 'DeliveryAccount,DeliveryDate,DeliveryNumber,Description,GoodsDeliveryLines'
 
         if entry_id is not None:
             # Filter by our EntryID
