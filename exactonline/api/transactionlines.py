@@ -6,7 +6,7 @@ class TransactionLines(Manager):
 
     def filter(self, transaction_id=None, **kwargs):
         if 'select' not in kwargs:
-            kwargs['select'] = 'AccountName,ItemCode,ItemDescription,SerialNumber,Type,Quantity,OrderNumber,LineNumber,LineType,Date'
+            kwargs['select'] = 'AccountName,ItemCode,SerialNumber,Type,Quantity,OrderNumber,Date'
 
         if transaction_id is not None:
             # Filter by our EntryID
