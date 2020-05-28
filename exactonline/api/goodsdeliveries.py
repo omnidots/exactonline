@@ -2,7 +2,7 @@ from .manager import Manager
 
 
 class GoodsDeliveries(Manager):
-    resource = 'salesorder/GoodsDeliveries'
+    resource = 'bulk/SalesOrder/GoodsDeliveries'
 
     def filter(self, entry_id=None, **kwargs):
         if 'select' not in kwargs:

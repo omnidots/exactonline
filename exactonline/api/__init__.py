@@ -22,10 +22,12 @@ from .goodsdeliveries import GoodsDeliveries
 from .invoices import Invoices
 from .items import Items
 from .ledgeraccounts import LedgerAccounts
+from .plannedsalesreturns import PlannedSalesReturns
 from .quotations import Quotations
 from .receivables import Receivables
 from .relations import Relations
 from .stockserialnumbers import StockSerialNumbers
+from .transactionlines import TransactionLines
 from .vatcodes import VatCodes
 
 
@@ -50,8 +52,10 @@ class ExactApi(
     invoices = Invoices.as_property()
     items = Items.as_property()
     ledgeraccounts = LedgerAccounts.as_property()
+    plannedsalesreturns = PlannedSalesReturns.as_property()
     quotations = Quotations.as_property()
     receivables = Receivables.as_property()
     relations = Relations.as_property()
     stockserialnumbers = StockSerialNumbers.as_property()
+    transactionlines = TransactionLines.as_property()
     vatcodes = VatCodes.as_property()
