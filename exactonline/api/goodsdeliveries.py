@@ -2,11 +2,13 @@ from .manager import Manager
 
 
 class GoodsDeliveries(Manager):
-    resource = 'bulk/SalesOrder/GoodsDeliveries'
+    resource = 'bulk/Salesorder/GoodsDeliveries'
 
     def filter(self, entry_id=None, **kwargs):
         if 'select' not in kwargs:
-            kwargs['select'] = 'DeliveryAccount,DeliveryDate,DeliveryNumber,Description,GoodsDeliveryLines'
+            kwargs['select'] = 'DeliveryAccount,DeliveryDate,DeliveryNumber,'.format(
+                'GoodsDeliveryLines/ItemCode,GoodsDeliveryLines/SerialNumbers/SerialNumber'
+            )
 
         if entry_id is not None:
             # Filter by our EntryID

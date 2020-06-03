@@ -60,8 +60,11 @@ class Manager(object):
         return self.filter()
 
     def get(self, **kwargs):
-        assert 'top' not in kwargs
-        ret = self.filter(top=2, **kwargs)
+        if 'select' not in kwargs:
+            ret = self.filter(top=1, **kwargs)
+        else:
+            assert 'top' not in kwargs
+            ret = self.filter(top=2, **kwargs)
         if not ret:
             raise ObjectDoesNotExist()
         if len(ret) > 1:
