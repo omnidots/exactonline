@@ -6,7 +6,7 @@ class GoodsDeliveries(Manager):
 
     def filter(self, entry_id=None, **kwargs):
         if 'select' not in kwargs:
-            kwargs['select'] = 'DeliveryAccount,DeliveryDate,DeliveryNumber,'.format(
+            kwargs['select'] = 'DeliveryAccount,DeliveryDate,DeliveryNumber,{}'.format(
                 'GoodsDeliveryLines/ItemCode,GoodsDeliveryLines/SerialNumbers/SerialNumber'
             )
 
