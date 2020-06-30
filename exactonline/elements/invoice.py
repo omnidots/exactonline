@@ -80,9 +80,9 @@ class ExactInvoice(ExactElement):
                     '5555': '<guid2_from_exactonline_ledgeraccounts>'}
         """
         if codes:
-            codes = set(str(i) for i in codes)
+            codes = {str(i) for i in codes}
             ledger_ids = self._api.ledgeraccounts.filter(code__in=codes)
-            ret = dict((str(i['Code']), i['ID']) for i in ledger_ids)
+            ret = {str(i['Code']): i['ID'] for i in ledger_ids}
             found = set(ret.keys())
             missing = (codes - found)
             if missing:
@@ -226,7 +226,7 @@ class ExactInvoice(ExactElement):
 
         # Cache ledger codes to ledger GUIDs.
         ledger_ids = self.get_ledger_code_to_guid_map(
-            set(i['code'] for i in ledger_lines))
+            {i['code'] for i in ledger_lines})
 
         for ledger_line in ledger_lines:
             ret.append(self.assemble_line(ledger_line, ledger_ids))

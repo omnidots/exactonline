@@ -64,7 +64,7 @@ class Invoices(Manager):
         # Quick, select all. Not the most nice to the server though.
         if exact_invoice_numbers is None:
             ret = self.filter(select='InvoiceNumber,YourRef')
-            return dict((i['InvoiceNumber'], i['YourRef']) for i in ret)
+            return {i['InvoiceNumber']: i['YourRef'] for i in ret}
 
         # Slower, select what we want to know. More work for us.
         exact_to_foreign_map = {}
@@ -80,7 +80,7 @@ class Invoices(Manager):
             assert filter_  # if filter was empty, we'd get all!
             ret = self.filter(filter=filter_, select='InvoiceNumber,YourRef')
             exact_to_foreign_map.update(
-                dict((i['InvoiceNumber'], i['YourRef']) for i in ret))
+                {i['InvoiceNumber']: i['YourRef'] for i in ret})
 
         # Any values we missed?
         for exact_invoice_number in exact_invoice_numbers:
@@ -99,7 +99,7 @@ class Invoices(Manager):
         # Quick, select all. Not the most nice to the server though.
         if foreign_invoice_numbers is None:
             ret = self.filter(select='InvoiceNumber,YourRef')
-            return dict((i['YourRef'], i['InvoiceNumber']) for i in ret)
+            return {i['YourRef']: i['InvoiceNumber'] for i in ret}
 
         # Slower, select what we want to know. More work for us.
         foreign_to_exact_map = {}
@@ -116,7 +116,7 @@ class Invoices(Manager):
             assert filter_  # if filter was empty, we'd get all!
             ret = self.filter(filter=filter_, select='InvoiceNumber,YourRef')
             foreign_to_exact_map.update(
-                dict((i['YourRef'], i['InvoiceNumber']) for i in ret))
+                {i['YourRef']: i['InvoiceNumber'] for i in ret})
 
         # Any values we missed?
         for foreign_invoice_number in foreign_invoice_numbers:
