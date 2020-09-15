@@ -9,7 +9,7 @@ class Items(Manager):
             kwargs['select'] = 'ID,Stock,Description,Code'
 
         if code is not None:
-            # Filter by our EntryID
+            # Filter by our Code.
             self._filter_append(kwargs, u'Code eq  %s' % (code,))
 
         return super(Items, self).filter(**kwargs)

@@ -9,7 +9,7 @@ class TransactionLines(Manager):
             kwargs['select'] = 'AccountName,ItemCode,SerialNumber,Type,Quantity,OrderNumber,Date'
 
         if transaction_id is not None:
-            # Filter by our EntryID
+            # Filter by our ID.
             self._filter_append(kwargs, u'ID eq  %s' % (transaction_id,))
 
         return super(TransactionLines, self).filter(**kwargs)
