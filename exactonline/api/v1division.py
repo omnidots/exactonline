@@ -42,7 +42,7 @@ class V1Division(object):
         resource = urljoin(urlbase, 'hrm/Divisions?$select=Code,Description')
         ret = self.rest(GET(resource))
 
-        choices = dict((i['Code'], i['Description']) for i in ret)
+        choices = {i['Code']: i['Description'] for i in ret}
         return choices, current_division
 
     def set_division(self, division):

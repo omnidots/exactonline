@@ -28,6 +28,8 @@ from datetime import timedelta
 from .base import ExactElement
 from ..exceptions import ExactOnlineError, ObjectDoesNotExist
 from ..resource import DELETE, POST
+import re
+import datetime
 
 
 class UnknownLedgerCodes(ExactOnlineError):
@@ -78,9 +80,9 @@ class ExactInvoice(ExactElement):
                     '5555': '<guid2_from_exactonline_ledgeraccounts>'}
         """
         if codes:
-            codes = set(str(i) for i in codes)
+            codes = {str(i) for i in codes}
             ledger_ids = self._api.ledgeraccounts.filter(code__in=codes)
-            ret = dict((str(i['Code']), i['ID']) for i in ledger_ids)
+            ret = {str(i['Code']): i['ID'] for i in ledger_ids}
             found = set(ret.keys())
             missing = (codes - found)
             if missing:
@@ -115,21 +117,6 @@ class ExactInvoice(ExactElement):
     def get_invoice_number(self):
         """
         Return your own invoice number; YourRef.
-        """
-        raise NotImplementedError()
-
-    def get_total_amount_incl_vat(self):
-        """
-        Return the total amount including VAT.
-
-        This is used in AmountDC (default currency) and AmountFC
-        (foreign currency).
-        """
-        raise NotImplementedError()
-
-    def get_total_vat(self):
-        """
-        Return the total VAT amount.
         """
         raise NotImplementedError()
 
@@ -179,12 +166,13 @@ class ExactInvoice(ExactElement):
         """
         raise NotImplementedError()
 
+    def custom_data(self):
+        return {}
+
     def assemble(self):
         invoice_number = self.get_invoice_number()
         customer = self.get_customer()
 
-        total_amount_incl_vat = self.get_total_amount_incl_vat()
-        total_vat = self.get_total_vat()
         created_date = self.get_created_date()
         description = u'%s - %s, %s' % (invoice_number, customer.get_name(),
                                         created_date.strftime('%m-%Y'))
@@ -199,8 +187,6 @@ class ExactInvoice(ExactElement):
         # Compile data to send.
         data = {
             # Converting to string is better than converting to float.
-            'AmountDC': str(total_amount_incl_vat),  # DC=default_currency
-            'AmountFC': str(total_amount_incl_vat),  # FC=foreign_currency
 
             # Strange! We receive the date(time) objects as
             # '/Date(unixmilliseconds)/' (mktime(d.timetuple())*1000),
@@ -219,13 +205,11 @@ class ExactInvoice(ExactElement):
             'ReportingPeriod': created_date.month,
             'ReportingYear': created_date.year,
             'SalesEntryLines': self.assemble_lines(),
-            'VATAmountDC': str(total_vat),  # str>float, DC=default_currency
-            'VATAmountFC': str(total_vat),  # str>float, FC=foreign_currency
             'YourRef': invoice_number,
 
             'InvoiceNumber': self.hint_exact_invoice_number(),
         }
-
+        data.update(self.custom_data())
         return data
 
     def assemble_lines(self):
@@ -236,7 +220,7 @@ class ExactInvoice(ExactElement):
 
         # Cache ledger codes to ledger GUIDs.
         ledger_ids = self.get_ledger_code_to_guid_map(
-            set(i['code'] for i in ledger_lines))
+            {i['code'] for i in ledger_lines})
 
         for ledger_line in ledger_lines:
             ret.append(self.assemble_line(ledger_line, ledger_ids))
@@ -249,6 +233,8 @@ class ExactInvoice(ExactElement):
             # precision.
             'AmountDC': str(ledger_line['total_amount_excl_vat']),
             'AmountFC': str(ledger_line['total_amount_excl_vat']),
+            'From': ledger_line['from'],
+            'To': ledger_line['to'],
             'Description': ledger_line['description'],
             'GLAccount': ledger_ids[ledger_line['code']],
             'VATCode': self.get_vatcode_for_ledger_line(ledger_line),
@@ -283,9 +269,14 @@ class ExactInvoice(ExactElement):
             # deleting the last item removes the entire invoice.
             old_salesentrylines = self.__get_remote()['SalesEntryLines']
 
+            self.convert(old_salesentrylines)
+
             # Add new (and pop the SalesEntryLines from the invoice
             # dict).
             new_salesentrylines = data.pop('SalesEntryLines')
+
+            self.remove_duplicates(new_salesentrylines, old_salesentrylines)
+
             for line in new_salesentrylines:
                 line['EntryID'] = exact_guid
                 self._api.restv1(POST('salesentry/SalesEntryLines', line))
@@ -318,3 +309,22 @@ class ExactInvoice(ExactElement):
         if isinstance(self._cached_remote, Exception):
             raise self._cached_remote
         return self._cached_remote
+
+    def remove_duplicates(self, new_salesentrylines, old_salesentrylines):
+        for n in new_salesentrylines[:]:
+            for o in old_salesentrylines:
+                if n.items() <= o.items():
+                    new_salesentrylines.remove(n)
+                    old_salesentrylines.remove(o)
+                    break
+
+    def convert(self, salesentrylines):
+        number_match = re.compile(r'\d+')
+        for salesentryline in salesentrylines:
+            for key in ('From', 'To'):
+                salesentryline[key] = datetime.datetime.fromtimestamp(
+                    int(number_match.search(salesentryline[key]).group()) / 1000
+                ).strftime('%Y-%m-%dT%H:%M:%SZ')
+            salesentryline['AmountFC'] = str(salesentryline['AmountFC'])
+            salesentryline['AmountDC'] = str(salesentryline['AmountDC'])
+            salesentryline['VATCode'] = str(int(salesentryline['VATCode']))

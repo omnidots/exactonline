@@ -85,7 +85,7 @@ class ExactOnlineConfig(object):
     def get_rest_url(self):
         return native_string(self.get_or_set_default(
             'server', 'rest_url',
-            'https://start.exactonline.nl/api'))
+            'https://start.exactonline.nl/api/'))
 
     def get_token_url(self):
         return native_string(self.get_or_set_default(
@@ -157,8 +157,6 @@ class ExactOnlineConfig(object):
     def set_refresh_token(self, value):
         self.set('transient', 'refresh_token', native_string(value))
 
-    # ; aliases
-
     def get_refresh_url(self):
-        "Alias for get_token_url()."
+        # Alias for get_token_url().
         return self.get_token_url()
