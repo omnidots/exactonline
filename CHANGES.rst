@@ -1,36 +1,14 @@
 Changes
 -------
 
-* v0.4.0+dev:
+* v0.3.4+dev:
 
-  - Added bulksalesitemprices, salespricelistperiods, salespricelists,
-    salespricelistvolumediscounts, supplieritems, syncsalesitemprices,
-    by Sascha Dobbelaere (@sdobbelaere).
-
-* v0.4.0:
-
-  - Added ratelimiter, requested and tested by various people.
-
-  - Added debug logs, by Martijn Hemeryck (@mhemeryck).
-
-  - Cleanup. Also by Eike Dehling (@EikeDehling).
-
-* v0.3.6:
-
-  - Try refreshing tokens *before* receiving a 401 per the request of
-    Alexandar Mechev (@apmechev).
-
-* v0.3.5:
-
-  - Implement quotations. Thanks Ties (@ties-v).
-
-  - Updated/added assets, tests and docs.
+  - FIXME
 
 * v0.3.4:
 
   - Added bankaccounts manager. Closes #21. Thanks Edwin van de Ven
     (@edwinvandeven).
-
   - Added global configurable iteration limit parameter.
 
     Default unpagination was limited to 50 to avoid infinite loops in

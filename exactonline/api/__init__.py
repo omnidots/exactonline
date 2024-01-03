@@ -5,7 +5,7 @@ ExactApi class.
 
 This file is part of the Exact Online REST API Library in Python
 (EORALP), licensed under the LGPLv3+.
-Copyright (C) 2015-2021 Walter Doekes, OSSO B.V.
+Copyright (C) 2015-2018 Walter Doekes, OSSO B.V.
 """
 from ..rawapi import ExactRawApi
 
@@ -15,7 +15,6 @@ from .v1division import V1Division
 
 from .accounts import Accounts
 from .bankaccounts import BankAccounts
-from .bulksalesitemprices import BulkSalesItemPrices
 from .contacts import Contacts
 from .documentattachments import DocumentAttachments
 from .documents import Documents
@@ -29,11 +28,6 @@ from .receivables import Receivables
 from .relations import Relations
 from .stockserialnumbers import StockSerialNumbers
 from .transactionlines import TransactionLines
-from .salespricelistperiods import SalesPriceListPeriods
-from .salespricelists import SalesPriceLists
-from .salespricelistvolumediscounts import SalesPriceListVolumeDiscounts
-from .supplieritems import SupplierItems
-from .syncsalesitemprices import SyncSalesItemPrices
 from .vatcodes import VatCodes
 
 
@@ -43,14 +37,14 @@ class ExactApi(
     # Strip the surrounding "d" and "results" dictionary
     # items.
     Unwrap,
-    # Ensure that tokens are refreshed in a timely manner.
+    # Ensure that tokens are refreshed: if we get a 401, refresh the
+    # tokens.
     Autorefresh,
     # The base class comes last: talk to /api.
     ExactRawApi
 ):
     accounts = Accounts.as_property()
     bankaccounts = BankAccounts.as_property()
-    bulksalesitemprices = BulkSalesItemPrices.as_property()
     contacts = Contacts.as_property()
     documentattachments = DocumentAttachments.as_property()
     documents = Documents.as_property()
@@ -64,9 +58,4 @@ class ExactApi(
     relations = Relations.as_property()
     stockserialnumbers = StockSerialNumbers.as_property()
     transactionlines = TransactionLines.as_property()
-    salespricelists = SalesPriceLists.as_property()
-    salespricelistvolumediscounts = SalesPriceListVolumeDiscounts.as_property()
-    salespricelistperiods = SalesPriceListPeriods.as_property()
-    supplieritems = SupplierItems.as_property()
-    syncsalesitemprices = SyncSalesItemPrices.as_property()
     vatcodes = VatCodes.as_property()

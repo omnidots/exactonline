@@ -8,13 +8,10 @@ Copyright (C) 2015-2016 Walter Doekes, OSSO B.V.
 
 We may want to replace this with something simpler.
 """
-import logging
+import urllib
 import socket
 import ssl
 import sys
-import urllib
-
-logger = logging.getLogger(__name__)
 
 try:
     from ssl import create_default_context
@@ -59,7 +56,8 @@ urljoin  # touch it, we don't use it
 
 class BadProtocol(ValueError):
     """
-    Raised when you try to http_req with a disallowed protocol.
+    Raised when you try to http_get or http_post with a disallowed
+    protocol.
     """
     pass
 
@@ -234,22 +232,36 @@ class ValidHTTPSHandler(request.HTTPSHandler):
         return self.do_open(class_, req)
 
 
-def http_req(method, url, data=None, opt=opt_default, limiter=None):
+def http_delete(url, opt=opt_default):
     """
-    Generic http request with user supplied method.
-
-    We'll probably want to add a nice timeout here later too.
+    Shortcut for urlopen (DELETE) + read. We'll probably want to add a
+    nice timeout here later too.
     """
-    if method in ('DELETE', 'GET'):
-        assert data is None, (method, url, data)
-    elif method in ('POST', 'PUT'):
-        pass
-    else:
-        raise NotImplementedError(
-            'No REST handler for method %s' % (method,))
+    return _http_request(url, method='DELETE', opt=opt)
 
-    return _http_request(
-        url, method=method, data=_marshalled(data), opt=opt, limiter=limiter)
+
+def http_get(url, opt=opt_default):
+    """
+    Shortcut for urlopen (GET) + read. We'll probably want to add a nice
+    timeout here later too.
+    """
+    return _http_request(url, method='GET', opt=opt)
+
+
+def http_post(url, data=None, opt=opt_default):
+    """
+    Shortcut for urlopen (POST) + read. We'll probably want to add a
+    nice timeout here later too.
+    """
+    return _http_request(url, method='POST', data=_marshalled(data), opt=opt)
+
+
+def http_put(url, data=None, opt=opt_default):
+    """
+    Shortcut for urlopen (PUT) + read. We'll probably want to add a nice
+    timeout here later too.
+    """
+    return _http_request(url, method='PUT', data=_marshalled(data), opt=opt)
 
 
 def _marshalled(data):
@@ -264,29 +276,7 @@ def _marshalled(data):
     return data
 
 
-def _update_ratelimiter_with_exactonline_headers(limiter, headers):
-    if limiter:
-        # First Daily, then Minutely. If both keys are the same, the shortest
-        # should win. And the minute timer is likely the shortest.
-        if headers.get('x-ratelimit-reset'):
-            limiter.update(
-                # X-RateLimit-Reset: 1638489600000
-                until=headers.get('x-ratelimit-reset'),
-                # X-RateLimit-Limit: 9000
-                limit=headers.get('x-ratelimit-limit'),
-                # X-RateLimit-Remaining: 8924
-                remaining=headers.get('x-ratelimit-remaining'))
-        if headers.get('x-ratelimit-minutely-reset'):
-            limiter.update(
-                # X-RateLimit-Minutely-Reset: 1638447360000
-                until=headers.get('x-ratelimit-minutely-reset'),
-                # X-RateLimit-Minutely-Limit: 100
-                limit=headers.get('x-ratelimit-minutely-limit'),
-                # X-RateLimit-Minutely-Remaining: 99
-                remaining=headers.get('x-ratelimit-minutely-remaining'))
-
-
-def _http_request(url, method=None, data=None, opt=None, limiter=None):
+def _http_request(url, method=None, data=None, opt=None):
     # Check protocol.
     proto = url.split(':', 1)[0]
     if proto not in opt.protocols:
@@ -300,9 +290,6 @@ def _http_request(url, method=None, data=None, opt=None, limiter=None):
     else:
         opener = request.build_opener()
 
-    logger.debug(
-        'Outgoing request for {url} using method {method}'
-        .format(url=url, method=method))
     # Create the Request with optional extra headers.
     req = Request(url=url, data=data, method=method,
                   headers=(opt.headers or {}))
@@ -321,14 +308,6 @@ def _http_request(url, method=None, data=None, opt=None, limiter=None):
         stored_exception = exception
     finally:
         if fp:
-            # Store ratelimit values if available.
-            if limiter:
-                try:
-                    _update_ratelimiter_with_exactonline_headers(
-                        limiter, fp.headers)
-                except Exception:
-                    logger.exception('Unexpected headers in %r', fp.headers)
-
             # Try a bit harder to flush the connection and close it
             # properly. In case of errors, our django testserver peer
             # will show an error about us killing the connection
